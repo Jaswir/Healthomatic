@@ -6,28 +6,39 @@ from rest_framework import status
 import json
 import requests
 import os
+from .ai_utils import (
+    getResponseFromChatGPT3_5Turbo,
+    imagepath_to_base64,
+    getResponseFromGPT4_Vision_Using_Clarifai,
+)
 
-@api_view(['GET'])
+
+@api_view(["GET"])
 def getPriorityFromSymptoms(request, symptoms):
-    
-    #TODO call the model to get the priority from the symptoms
-    
-   return JsonResponse("{priority: 'emergency'}", safe=False)
-                            
 
-@api_view(['GET'])
+    # TODO call the model to get the priority from the symptoms
+
+    return JsonResponse("{priority: 'emergency'}", safe=False)
+
+
+@api_view(["GET"])
 def getSymptomsFromImage(request, image):
 
-     #TODO call the model to get symptoms from the image
-    
+    # TODO call the model to get symptoms from the image
+    image_path = "Dysgraphia.jpg"
+    prompt = "What does the text in this image say?"
+    base64_image = imagepath_to_base64(image_path)
+
+    symptoms = getResponseFromGPT4_Vision_Using_Clarifai(prompt, base64_image)
+
     # return the response
-    return JsonResponse("{symptoms: ['cough', 'fever', 'headache']}",  safe=False)
+    return JsonResponse("{symptoms:" + symptoms + "}", safe=False)
 
 
-@api_view(['GET'])
+@api_view(["GET"])
 def getDiagnosesFromSymptoms(request, symptoms):
 
-    #TODO call the model to get the diagnoses from the symptoms
+    # TODO call the model to get the diagnoses from the symptoms
 
     # return the response
     return JsonResponse("{diagnoses: ['flu', 'cold']}", safe=False)
