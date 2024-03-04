@@ -27,7 +27,7 @@ def getSymptomsFromImage(request, image):
 @api_view(['GET'])
 def getDiagnosesFromSymptoms(request, symptoms):
 
-    #TODO call the model to get the diagnoses
+    #TODO call the model to get the diagnoses from the symptoms
 
     # return the response
     return JsonResponse("{diagnoses: ['flu', 'cold']}", safe=False)
