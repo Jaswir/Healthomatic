@@ -10,6 +10,7 @@ from .ai_utils import (
     getResponseFromChatGPT3_5Turbo,
     imagepath_to_base64,
     getResponseFromGPT4_Vision_Using_Clarifai,
+    getResponseGPT4_Vision_OpenAI,
 )
 
 
