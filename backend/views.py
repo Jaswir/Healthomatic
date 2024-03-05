@@ -19,10 +19,17 @@ client = OpenAI(api_key=api_key_gpt3_5)
 
 @api_view(["GET"])
 def getPriorityFromSymptoms(request, symptoms):
-
-    # TODO call the model to get the priority from the symptoms
-
-    return JsonResponse("{priority: 'emergency'}", safe=False)
+    prompt = f"I am experiencing the following symptoms: {', '.join(symptoms)}. What should I do? Classify me into one of the following categories: 'Immediate: life threatening', 'Emergency: could become life threatening', 'Urgent: not life threatening', 'Semi Urgent: not life threatening', 'Non-urgent: needs treatment when time'."
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo-0125",
+        response_format={"type": "json_object"},
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant designed to output JSON."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    aitriage=response.choices[0].message.content
+    return JsonResponse("{aitriage:" + aitriage + "}", safe=False)
 
 
 @api_view(["GET"])
@@ -41,8 +48,6 @@ def getSymptomsFromImage(request, image):
 
 @api_view(["GET"])
 def getDiagnosesFromSymptoms(request, symptoms):
-
-    # TODO call the model to get the diagnoses from the symptoms
     prompt = f"I am experiencing the following symptoms: {', '.join(symptoms)}. Please provide a list of possible diseases related to these symptoms."
     response = client.chat.completions.create(
         model="gpt-3.5-turbo-0125",

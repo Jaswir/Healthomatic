@@ -13,7 +13,7 @@ api_key_gpt4_0 = os.environ.get("OPEN_AI_KEY_GPT4")
 client = OpenAI(api_key=api_key_gpt3_5)
 
 # Set your Clarifai API key
-os.environ["CLARIFAI_PAT"] = os.environ.get("CLARIFAI_PAT")
+#os.environ["CLARIFAI_PAT"] = os.environ.get("CLARIFAI_PAT")
 
 print("setup AI ")
 
