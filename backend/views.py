@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from openai import OpenAI
 import json
 import requests
 import os
@@ -13,6 +14,8 @@ from .ai_utils import (
     getResponseGPT4_Vision_OpenAI,
 )
 
+api_key_gpt3_5 = os.environ.get("OPEN_AI_KEY")
+client = OpenAI(api_key=api_key_gpt3_5)
 
 @api_view(["GET"])
 def getPriorityFromSymptoms(request, symptoms):
@@ -40,6 +43,15 @@ def getSymptomsFromImage(request, image):
 def getDiagnosesFromSymptoms(request, symptoms):
 
     # TODO call the model to get the diagnoses from the symptoms
-
+    prompt = f"I am experiencing the following symptoms: {', '.join(symptoms)}. Please provide a list of possible diseases related to these symptoms."
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo-0125",
+        response_format={"type": "json_object"},
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant designed to output JSON."},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    diagnoses=response.choices[0].message.content
+    return JsonResponse("{diagonoses:" + diagnoses + "}", safe=False)
     # return the response
-    return JsonResponse("{diagnoses: ['flu', 'cold']}", safe=False)
