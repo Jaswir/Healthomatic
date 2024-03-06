@@ -22,9 +22,9 @@ client = OpenAI(api_key=api_key_gpt3_5)
 def getPriorityFromSymptoms(request, symptoms):
     prompt = f"""I am experiencing the following symptoms: {', '.join(symptoms)}. 
     What should I do? Classify me into one of the following categories: 
-    'Immediate: life threatening', 'Emergency: could become life threatening', 
-    'Urgent: not life threatening', 'Semi Urgent: not life threatening', 
-    'Non-urgent: needs treatment when time'.
+    'Emergency: Those with emergency signs require immediate emergency treatment.',
+    'Priorty: Those with priority signs should be given priority in queue for rapid assessment and treatment.', 
+    'Non-urgent: Those who have no emergency or priority signs are non-urgent cases and can wait their turn for assessment and treatment.'.
 
     Here is an example output: 
     [
@@ -69,7 +69,21 @@ def getSymptomsFromImage(request, image):
 
 @api_view(["GET"])
 def getDiagnosesFromSymptoms(request, symptoms):
-    prompt = f"I am experiencing the following symptoms: {', '.join(symptoms)}. Please provide a list of possible diseases related to these symptoms."
+    prompt = f'''I am experiencing the following symptoms: {', '.join(symptoms)}. Please provide a list of possible diseases related to these symptoms.
+    
+    Here is an example output: 
+    "
+        "possible_diseases": [
+            "Common cold",
+            "Flu (Influenza)",
+            "Strep throat",
+            "Sinus infection",
+            "Allergies"
+        ]
+    "
+
+    You must return you output as a JSON list like the example above.
+    '''
     response = client.chat.completions.create(
         model="gpt-3.5-turbo-0125",
         response_format={"type": "json_object"},
@@ -82,5 +96,6 @@ def getDiagnosesFromSymptoms(request, symptoms):
         ],
     )
     diagnoses = response.choices[0].message.content
-    return JsonResponse("{diagonoses:" + diagnoses + "}", safe=False)
+    parsed_data_diagnoses = json.loads(diagnoses)
+    return JsonResponse(parsed_data_diagnoses, safe=False)
     # return the response
