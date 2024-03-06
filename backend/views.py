@@ -35,7 +35,9 @@ def getPatientsByPriority(request, priority):
     priorities = ["Emergency", "Priority", "Non-urgent"]
     if priority not in priorities:
         return JsonResponse(
-            {"error": "Invalid priority. Please enter one of the following: 'Emergency', 'Priority', 'Non-urgent'."},
+            {
+                "error": "Invalid priority. Please enter one of the following: 'Emergency', 'Priority', 'Non-urgent'."
+            },
             status=status.HTTP_400_BAD_REQUEST,
         )
     patients = PatientModel.objects.filter(priority=priority)
