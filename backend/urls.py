@@ -22,4 +22,7 @@ urlpatterns = [
     path('getPriorityFromSymptoms/<str:symptoms>', views.getPriorityFromSymptoms),
     path('getSymptomsFromImage/<str:image>', views.getSymptomsFromImage),
     path('getDiagnosesFromSymptoms/<str:symptoms>', views.getDiagnosesFromSymptoms),
+
+    path('addPatient', views.addPatient),
+    path('patients/<priority>', views.getPatientsByPriority),
 ]

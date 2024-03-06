@@ -13,9 +13,34 @@ from .ai_utils import (
     getResponseFromGPT4_Vision_Using_Clarifai,
     getResponseGPT4_Vision_OpenAI,
 )
+from .models import PatientModel
+from .serializers import PatientModelSerializer
+
 
 api_key_gpt3_5 = os.environ.get("OPEN_AI_KEY")
 client = OpenAI(api_key=api_key_gpt3_5)
+
+
+@api_view(["POST"])
+def addPatient(request):
+    serializer = PatientModelSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["GET"])
+def getPatientsByPriority(request, priority):
+    priorities = ["Emergency", "Priority", "Non-urgent"]
+    if priority not in priorities:
+        return JsonResponse(
+            {"error": "Invalid priority. Please enter one of the following: 'Emergency', 'Priority', 'Non-urgent'."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+    patients = PatientModel.objects.filter(priority=priority)
+    serializer = PatientModelSerializer(patients, many=True)
+    return JsonResponse(serializer.data, safe=False, status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])
@@ -69,7 +94,7 @@ def getSymptomsFromImage(request, image):
 
 @api_view(["GET"])
 def getDiagnosesFromSymptoms(request, symptoms):
-    prompt = f'''I am experiencing the following symptoms: {', '.join(symptoms)}. Please provide a list of possible diseases related to these symptoms.
+    prompt = f"""I am experiencing the following symptoms: {', '.join(symptoms)}. Please provide a list of possible diseases related to these symptoms.
     
     Here is an example output: 
     "
@@ -83,7 +108,7 @@ def getDiagnosesFromSymptoms(request, symptoms):
     "
 
     You must return you output as a JSON list like the example above.
-    '''
+    """
     response = client.chat.completions.create(
         model="gpt-3.5-turbo-0125",
         response_format={"type": "json_object"},
