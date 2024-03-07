@@ -6,7 +6,6 @@ class PatientModel(models.Model):
     birth_date = models.DateField()
     healthcard_number = models.CharField(max_length=100)
     appointment_timings = models.DateTimeField()
-    age = models.IntegerField()
 
     priority = models.CharField(max_length=100)
     symptoms = models.TextField()
