@@ -46,6 +46,13 @@ def getPatientsByPriority(request, priority):
 
 
 @api_view(["GET"])
+def clearPatients(request):
+    # Delete all patient records
+    PatientModel.objects.all().delete()
+    return JsonResponse({"response": "all patient data cleared"}, safe=False, status=status.HTTP_200_OK)
+
+
+@api_view(["GET"])
 def getPriorityFromSymptoms(request, symptoms):
     prompt = f"""I am experiencing the following symptoms: {', '.join(symptoms)}. 
     What should I do? Classify me into one of the following categories: 
